@@ -56,7 +56,7 @@ dummy_margins["count"] = 0
 def margins_compute(population):
 
     pop_margins = population.groupby(["sex", "age", "marstat", "occupation", "hhsize", "electricity", "bank"]).size().reset_index(name="count")
-    pop_margins = pop_margins.concat(dummy_margins).reset_index(drop=True)
+    pop_margins = pd.concat([pop_margins, dummy_margins]).reset_index(drop=True)
     
     pop_margins = pop_margins.groupby(["sex", "age", "marstat", "occupation", "hhsize", "electricity", "bank"]).agg({"count": "sum"}).reset_index()
 
@@ -132,8 +132,7 @@ analysis_time = time.process_time() - t
 
 report = {
 
-    device = os.uname(),
-
+    "device": os.uname(),
     "read1_time": read1_time,
     "merge_time": merge_time,
     "sampling_time": sampling_time,
@@ -143,6 +142,10 @@ report = {
 
 
 os.makedirs("./Reports", exist_ok=True)
+import json
+
+with open("./Reports/report.json", "a") as f:
+    json.dump(report, f, indent=4)
 
 
 
